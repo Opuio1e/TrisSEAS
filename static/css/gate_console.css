@@ -1,0 +1,247 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0b1221;
+    color: #e5ebff;
+}
+
+a { color: #9bb8ff; }
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(6px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand {
+    font-weight: 700;
+    letter-spacing: 0.6px;
+}
+
+.links a {
+    margin-left: 16px;
+    text-decoration: none;
+    color: #dce7ff;
+    font-weight: 600;
+}
+
+.layout {
+    max-width: 1200px;
+    margin: 32px auto;
+    padding: 0 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #9bb8ff;
+    font-size: 12px;
+    margin: 0 0 6px;
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+.lede {
+    color: #c9d7ff;
+    margin-top: 6px;
+}
+
+.chip {
+    background: #12264f;
+    color: #9bb8ff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    border: 1px solid rgba(155, 184, 255, 0.4);
+}
+
+.video-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.video-card, .form-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+    min-height: 320px;
+}
+
+.video-frame {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    aspect-ratio: 4 / 3;
+    background: #050a17;
+}
+
+video, canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-weight: 700;
+}
+
+.hidden { display: none; }
+
+.controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.btn {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #e5ebff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.btn.primary {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none;
+    color: #fff;
+}
+
+.btn.ghost {
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.form-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.field label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.field input, .field select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.02);
+    color: #e5ebff;
+}
+
+.field .help {
+    margin: 6px 0 0;
+    color: #9bb8ff;
+    font-size: 13px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.status {
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(155, 184, 255, 0.08);
+    border: 1px solid rgba(155, 184, 255, 0.18);
+    color: #dce7ff;
+}
+
+.status[data-tone="success"] {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #c3f5df;
+}
+
+.status[data-tone="error"] {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fecdd3;
+}
+
+.rfid-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 16px;
+    color: #dce7ff;
+}
+
+.card ol, .card ul {
+    margin: 10px 0 0 16px;
+    color: #c9d7ff;
+}
+
+@media (max-width: 900px) {
+    .video-grid, .rfid-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-heading { flex-direction: column; align-items: flex-start; }
+}
