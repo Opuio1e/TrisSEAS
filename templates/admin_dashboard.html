@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ops Panel | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">TrisSEAS Ops Panel</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/analytics/">Analytics</a>
+            <a href="/notifications/">Notifications</a>
+            <a class="btn" href="/admin/">Django admin</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Operations</p>
+                <h1>Run campus entry with confidence.</h1>
+                <p class="lede">Live gate throughput, attendance confirmation, and alerting in one clean control room. Built for security desks and operations leads.</p>
+                <div class="chip-row">
+                    <span>Live feed</span>
+                    <span>Attendance sync</span>
+                    <span>Gate insights</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="card">
+                    <p class="eyebrow">Live status</p>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <p class="stat-value" id="opsEvents">--</p>
+                            <p class="stat-label">Events today</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="opsPresent">--</p>
+                            <p class="stat-label">Marked present</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="opsReliability">--%</p>
+                            <p class="stat-label">Success rate</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="opsGates">--</p>
+                            <p class="stat-label">Active gates</p>
+                        </div>
+                    </div>
+                    <div class="mini-feed" id="opsFeed"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Live feed</p>
+                        <h2>Latest gate activity</h2>
+                    </div>
+                    <a class="btn ghost" href="/console/">Open gate console</a>
+                </div>
+                <div class="feed-table" id="feedTable"></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Quick actions</p>
+                        <h2>Admin shortcuts</h2>
+                    </div>
+                </div>
+                <div class="actions">
+                    <a class="action" href="/admin/students/student/">
+                        <div>👤</div>
+                        <div>
+                            <p>Manage students</p>
+                            <small>RFID tags, IDs, and rosters</small>
+                        </div>
+                    </a>
+                    <a class="action" href="/admin/entry_gate/gateevent/">
+                        <div>🚪</div>
+                        <div>
+                            <p>Gate events</p>
+                            <small>Review entries and exits</small>
+                        </div>
+                    </a>
+                    <a class="action" href="/analytics/">
+                        <div>📊</div>
+                        <div>
+                            <p>Analytics</p>
+                            <small>Download insights</small>
+                        </div>
+                    </a>
+                    <a class="action" href="/notifications/">
+                        <div>🔔</div>
+                        <div>
+                            <p>Notifications</p>
+                            <small>Configure alerts</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{% static 'js/live-stats.js' %}"></script>
+    <script>
+        const opsEvents = document.getElementById('opsEvents');
+        const opsPresent = document.getElementById('opsPresent');
+        const opsReliability = document.getElementById('opsReliability');
+        const opsGates = document.getElementById('opsGates');
+        const opsFeed = document.getElementById('opsFeed');
+        const feedTable = document.getElementById('feedTable');
+
+        async function hydrateDashboard() {
+            try {
+                const response = await fetch('/api/live-stats/');
+                const data = await response.json();
+
+                opsEvents.textContent = data.events_today;
+                opsPresent.textContent = data.present_today;
+                opsReliability.textContent = `${data.success_rate.toFixed(1)}%`;
+                opsGates.textContent = data.active_gates;
+
+                opsFeed.innerHTML = (data.live_feed || []).slice(0, 4).map(item => `
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">${item.action.toUpperCase()}</p>
+                            <p class="muted">Student ${item.student}</p>
+                        </div>
+                        <span>${new Date(item.time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
+                    </div>
+                `).join('') || '<p class="muted">No activity yet today.</p>';
+
+                feedTable.innerHTML = (data.live_feed || []).map(item => `
+                    <div class="feed-row">
+                        <span class="badge ${item.success ? 'ok' : 'warn'}">${item.action}</span>
+                        <span>Student ${item.student}</span>
+                        <span>${new Date(item.time).toLocaleString()}</span>
+                        <span>${item.success ? 'Accepted' : 'Declined'}</span>
+                    </div>
+                `).join('') || '<p class="muted">Live events will appear here as gates report in.</p>';
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        hydrateDashboard();
+        setInterval(hydrateDashboard, 12000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">TrisSEAS Notifications</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/ops/">Ops panel</a>
+            <a href="/analytics/">Analytics</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Communications</p>
+                <h1>Send the right alert at the right time.</h1>
+                <p class="lede">Template out SMS or email alerts for late arrivals, denied access, or safety updates. Route them to staff, parents, or security automatically.</p>
+            </div>
+            <div class="card">
+                <p class="eyebrow">Defaults</p>
+                <ul>
+                    <li>Late arrival alerts – 10 minutes after first bell.</li>
+                    <li>Denied access – immediate notification to security.</li>
+                    <li>Exportable log of all notifications.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <p class="eyebrow">Recipients</p>
+                <div class="field">
+                    <label>Channels</label>
+                    <div class="chips">
+                        <label><input type="checkbox" checked> Email</label>
+                        <label><input type="checkbox" checked> SMS</label>
+                        <label><input type="checkbox"> Push</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Audience</label>
+                    <select>
+                        <option>Security team</option>
+                        <option>Faculty</option>
+                        <option>Parents</option>
+                        <option>Custom list…</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Triggers</label>
+                    <div class="chips">
+                        <label><input type="checkbox" checked> Late arrival</label>
+                        <label><input type="checkbox"> Early exit</label>
+                        <label><input type="checkbox" checked> Denied access</label>
+                        <label><input type="checkbox"> Attendance gap</label>
+                    </div>
+                </div>
+                <button class="btn">Save notification rules</button>
+            </div>
+
+            <div class="panel">
+                <p class="eyebrow">Preview</p>
+                <div class="preview" id="previewBox">Pick triggers to preview message content.</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const previewBox = document.getElementById('previewBox');
+        const checkboxes = Array.from(document.querySelectorAll('.chips input[type="checkbox"]'));
+
+        function updatePreview() {
+            const enabled = checkboxes.filter(c => c.checked).map(c => c.parentElement.textContent.trim());
+            if (!enabled.length) {
+                previewBox.textContent = 'Enable at least one trigger to generate messages.';
+                return;
+            }
+            previewBox.innerHTML = enabled.map(trigger => `
+                <div class="preview-card">
+                    <p><strong>${trigger}</strong></p>
+                    <p class="muted">Sample: "${trigger}" alert is sent to your selected audience instantly.</p>
+                </div>
+            `).join('');
+        }
+
+        checkboxes.forEach(c => c.addEventListener('change', updatePreview));
+        updatePreview();
+    </script>
+</body>
+</html>

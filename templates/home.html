@@ -11,50 +11,82 @@
     <link rel="stylesheet" href="{% static 'css/home.css' %}">
 </head>
 <body>
-    <header class="hero">
-        <div class="brand">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+    <header class="nav">
+        <div class="nav-brand">
             <div class="logo">SEAS</div>
             <div>
                 <p class="eyebrow">Smart Entry & Attendance</p>
                 <h1>TrisSEAS</h1>
-                <p class="lede">Secure entry, live attendance, and actionable analytics for modern campuses.</p>
-                <div class="cta-row">
-                    <a class="btn primary" href="/admin/">Open Admin</a>
-                    <a class="btn" href="/console/">Open Gate Console</a>
-                    <a class="btn ghost" href="/api/students/">View API</a>
-                </div>
             </div>
         </div>
-        <div class="hero-card">
-            <p class="card-label">Live Snapshot</p>
-            <div class="stat-grid">
-                <div class="stat">
-                    <p class="stat-value">98.3%</p>
-                    <p class="stat-label">On-time entries</p>
-                </div>
-                <div class="stat">
-                    <p class="stat-value">4,215</p>
-                    <p class="stat-label">Verified students</p>
-                </div>
-                <div class="stat">
-                    <p class="stat-value">24</p>
-                    <p class="stat-label">Active gates</p>
-                </div>
-                <div class="stat">
-                    <p class="stat-value">1.2s</p>
-                    <p class="stat-label">Avg. scan time</p>
-                </div>
-            </div>
-            <p class="card-foot">Data updates continuously from your SEAS deployment.</p>
-        </div>
+        <nav class="nav-links">
+            <a href="/ops/">Admin panel</a>
+            <a href="/analytics/">Analytics</a>
+            <a href="/notifications/">Notifications</a>
+            <a class="ghost" href="/console/">Gate console</a>
+        </nav>
     </header>
 
-    <main class="content">
+    <main>
+        <section class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">Campus command center</p>
+                <h2>Streamlined access, transparent attendance, instant insight.</h2>
+                <p class="lede">Secure entry gates, live attendance capture, and proactive notifications in one cohesive platform. Built for operations teams that need to act before issues slow the day down.</p>
+                <div class="cta-row">
+                    <a class="btn primary" href="/admin/">Launch Django admin</a>
+                    <a class="btn" href="/ops/">Open ops panel</a>
+                    <a class="btn ghost" href="/api/">API index</a>
+                </div>
+                <div class="pill-row">
+                    <span>Biometric-ready</span>
+                    <span>RFID friendly</span>
+                    <span>Audit-safe exports</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="live-card">
+                    <div class="live-header">
+                        <div class="pulse"></div>
+                        <div>
+                            <p class="eyebrow">Live snapshot</p>
+                            <p class="muted" id="liveUpdated">Syncing…</p>
+                        </div>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <p class="stat-value" id="statOnTime">--%</p>
+                            <p class="stat-label">On-time entries</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="statStudents">--</p>
+                            <p class="stat-label">Verified students</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="statGates">--</p>
+                            <p class="stat-label">Active gates</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value" id="statScan">--s</p>
+                            <p class="stat-label">Avg. scan time</p>
+                        </div>
+                    </div>
+                    <div class="feed" id="liveFeed"></div>
+                </div>
+                <div class="image-stack">
+                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Operations" />
+                    <div class="image-note">Operational visibility with real-time updates.</div>
+                </div>
+            </div>
+        </section>
+
         <section class="pillars">
             <article class="pillar">
                 <div class="icon">🔒</div>
                 <h3>Gate Security</h3>
-                <p>Biometric-ready verification to ensure every entry is authenticated and logged.</p>
+                <p>Biometric-ready verification keeps every entry authenticated and logged.</p>
             </article>
             <article class="pillar">
                 <div class="icon">🕒</div>
@@ -64,13 +96,34 @@
             <article class="pillar">
                 <div class="icon">📊</div>
                 <h3>Analytics</h3>
-                <p>See real-time activity, spot anomalies, and export insights for compliance.</p>
+                <p>Spot anomalies, track gate activity, and export insights for compliance.</p>
             </article>
             <article class="pillar">
                 <div class="icon">🔔</div>
                 <h3>Notifications</h3>
                 <p>Automated alerts keep staff informed of late arrivals and access issues.</p>
             </article>
+        </section>
+
+        <section class="panels">
+            <div class="panel-card">
+                <p class="eyebrow">Ops panel</p>
+                <h3>Control every gate from one clean cockpit</h3>
+                <p class="muted">Monitor live scans, confirm attendance, and nudge staff with operational notices. The panel is optimized for tablets mounted in security offices.</p>
+                <a class="btn primary" href="/ops/">Open the ops panel</a>
+            </div>
+            <div class="panel-card">
+                <p class="eyebrow">Analytics</p>
+                <h3>Evidence-ready analytics for leadership</h3>
+                <p class="muted">Daily throughput, peak load windows, and reliability percentages are pre-computed so you can export reports in seconds.</p>
+                <a class="btn" href="/analytics/">View analytics</a>
+            </div>
+            <div class="panel-card">
+                <p class="eyebrow">Notifications</p>
+                <h3>Push updates to the right people</h3>
+                <p class="muted">Template out SMS/email alerts for late arrivals or blocked entries, then route them by grade, group, or gate.</p>
+                <a class="btn ghost" href="/notifications/">Configure notifications</a>
+            </div>
         </section>
 
         <section class="callout">
@@ -94,9 +147,11 @@
         <p>TrisSEAS · Secure Entry & Attendance System</p>
         <div class="footer-links">
             <a href="/api/">API Index</a>
-            <a href="/admin/">Admin Panel</a>
+            <a href="/ops/">Admin Panel</a>
             <a href="mailto:support@trisseas.local">Support</a>
         </div>
     </footer>
+
+    <script src="{% static 'js/live-stats.js' %}"></script>
 </body>
 </html>
