@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.shortcuts import redirect
 from django.urls import path, include
 from django.views.generic import TemplateView
 
@@ -12,6 +13,13 @@ from apps.admin_panel.views import (
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
+
+    # Friendly redirect for older bookmarks/shared links
+    path(
+        "admin/advancedattendance/advancedrecord/",
+        lambda request: redirect("admin:attendance_attendancerecord_changelist"),
+    ),
+
     path("admin/", admin.site.urls),
     path("console/", GateConsoleView.as_view(), name="gate-console"),
     path("ops/", AdminDashboardView.as_view(), name="admin-dashboard"),
