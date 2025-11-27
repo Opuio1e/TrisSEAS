@@ -5,10 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import GateEvent
 from apps.students.models import Student
-from apps.students.face import FaceRecognition  # adjust if different path
 from .serializers import GateEventSerializer
-
-face = FaceRecognition()
+from .services import enroll_student_face, recognize_student_from_image
 
 class EnrollView(APIView):
     def post(self, request):
@@ -23,8 +21,13 @@ class EnrollView(APIView):
 
         student = get_object_or_404(Student, id=student_id)
 
-        # Enroll
-        face.enroll(student_id, image)
+        try:
+            enroll_student_face(student, image)
+        except ValueError as exc:  # raised when no face is detected
+            return Response(
+                {"detail": str(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response({"detail": "Face enrolled successfully."})
 
@@ -32,21 +35,26 @@ class EnrollView(APIView):
 class ScanView(APIView):
     def post(self, request):
         image = request.FILES.get("image")
-        action = request.data.get("action")
+        action = request.data.get("action", GateEvent.ENTRY)
 
         if not image:
             return Response({"detail": "image is required."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        student_id = face.identify(image)
+        valid_actions = {choice[0] for choice in GateEvent.ACTION_CHOICES}
+        if action not in valid_actions:
+            return Response(
+                {"detail": f"Invalid action. Use one of: {', '.join(valid_actions)}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        if student_id is None:
+        student = recognize_student_from_image(image)
+
+        if student is None:
             return Response(
                 {"detail": "No matching student found."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-        student = Student.objects.get(id=student_id)
 
         event = GateEvent.objects.create(
             student=student,
