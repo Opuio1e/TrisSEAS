@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import GateEvent
 from apps.students.models import Student
-from apps.students.face import FaceRecognition  # adjust if different path
+from .face import FaceRecognition
 from .serializers import GateEventSerializer
 
 face = FaceRecognition()
