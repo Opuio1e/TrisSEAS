@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Notification center</div>
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/admin/panel/">Admin panel</a>
+            <a href="/analytics/">Analytics</a>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Awareness</p>
+                    <h1>Keep staff in the loop</h1>
+                    <p class="lede">Review the latest alerts from gate events and act fast. Messages highlight after-hours movement, denied attempts, and standard entries.</p>
+                </div>
+                <a class="btn" href="/admin/">Open Django admin</a>
+            </div>
+
+            <div class="notif-grid">
+                {% if has_activity %}
+                    {% for notification in notifications %}
+                    <article class="notif {{ notification.severity }}">
+                        <div class="notif-header">
+                            <span class="pill {{ notification.severity }}">{{ notification.severity|title }}</span>
+                            <span class="time">{{ notification.timestamp|date:'M d · H:i' }}</span>
+                        </div>
+                        <h3>{{ notification.title }}</h3>
+                        <p class="meta">{{ notification.student_id }} · {{ notification.name }}</p>
+                        <p class="body">{{ notification.message }}</p>
+                        <div class="actions">
+                            <a class="text-link" href="mailto:{{ notification.name|default:'alerts' }}@school.local">Notify parent</a>
+                            <a class="text-link" href="/admin/entry_gate/gateevent/{{ notification.id }}/change/">Open event</a>
+                        </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <p class="muted">No notifications yet. Gate events will appear here automatically.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="panel secondary">
+            <h3>Delivery channels</h3>
+            <ul>
+                <li>📧 Email the parent listed on the Student record</li>
+                <li>🔔 Show in the admin control room live feed</li>
+                <li>📱 Push to the on-site dashboard for security teams</li>
+            </ul>
+            <p class="muted">Use the admin panel to configure SMTP or webhooks for your environment.</p>
+        </section>
+    </main>
+</body>
+</html>
