@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrisSEAS | Smart Education Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+    <header class="hero">
+        <div class="brand">
+            <div class="logo">SEAS</div>
+            <div>
+                <p class="eyebrow">Smart Entry & Attendance</p>
+                <h1>TrisSEAS</h1>
+                <p class="lede">Secure entry, live attendance, and actionable analytics for modern campuses.</p>
+                <div class="cta-row">
+                    <a class="btn primary" href="/admin/">Open Admin</a>
+                    <a class="btn ghost" href="/api/students/">View API</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-card">
+            <p class="card-label">Live Snapshot</p>
+            <div class="stat-grid">
+                <div class="stat">
+                    <p class="stat-value">98.3%</p>
+                    <p class="stat-label">On-time entries</p>
+                </div>
+                <div class="stat">
+                    <p class="stat-value">4,215</p>
+                    <p class="stat-label">Verified students</p>
+                </div>
+                <div class="stat">
+                    <p class="stat-value">24</p>
+                    <p class="stat-label">Active gates</p>
+                </div>
+                <div class="stat">
+                    <p class="stat-value">1.2s</p>
+                    <p class="stat-label">Avg. scan time</p>
+                </div>
+            </div>
+            <p class="card-foot">Data updates continuously from your SEAS deployment.</p>
+        </div>
+    </header>
+
+    <main class="content">
+        <section class="pillars">
+            <article class="pillar">
+                <div class="icon">🔒</div>
+                <h3>Gate Security</h3>
+                <p>Biometric-ready verification to ensure every entry is authenticated and logged.</p>
+            </article>
+            <article class="pillar">
+                <div class="icon">🕒</div>
+                <h3>Attendance</h3>
+                <p>Attendance is captured automatically so instructors can focus on teaching.</p>
+            </article>
+            <article class="pillar">
+                <div class="icon">📊</div>
+                <h3>Analytics</h3>
+                <p>See real-time activity, spot anomalies, and export insights for compliance.</p>
+            </article>
+            <article class="pillar">
+                <div class="icon">🔔</div>
+                <h3>Notifications</h3>
+                <p>Automated alerts keep staff informed of late arrivals and access issues.</p>
+            </article>
+        </section>
+
+        <section class="callout">
+            <div>
+                <p class="eyebrow">Why TrisSEAS</p>
+                <h2>Built for campuses that never stand still.</h2>
+                <p class="lede">Bring together entry control, attendance management, and analytics in one cohesive platform. TrisSEAS runs securely on-premise or in the cloud with APIs that plug into your existing systems.</p>
+            </div>
+            <div class="card">
+                <p class="card-label">Ready to explore?</p>
+                <p>Use the admin console to seed users, configure gates, and monitor events live.</p>
+                <div class="cta-row">
+                    <a class="btn primary" href="/admin/">Launch admin</a>
+                    <a class="btn ghost" href="mailto:ops@trisseas.local">Contact ops</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>TrisSEAS · Secure Entry & Attendance System</p>
+        <div class="footer-links">
+            <a href="/api/">API Index</a>
+            <a href="/admin/">Admin Panel</a>
+            <a href="mailto:support@trisseas.local">Support</a>
+        </div>
+    </footer>
+</body>
+</html>
