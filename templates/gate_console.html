@@ -25,7 +25,7 @@
                 <div>
                     <p class="eyebrow">Live capture</p>
                     <h1>Use your laptop webcam</h1>
-                    <p class="lede">Start the camera, capture a frame, and send it to the Entry Gate API. You can enroll a student or perform a gate scan.</p>
+                    <p class="lede">Start the camera, capture a frame, and simulate the Entry Gate flow entirely in your browser. You can enroll a student or perform a gate scan without any servers.</p>
                 </div>
                 <div class="chip">RFID-ready</div>
             </div>
@@ -110,11 +110,27 @@
 
         let stream;
         let lastBlob;
+        let lastCaptureSummary;
+        const enrollmentStoreKey = 'trisseas-local-enrollments';
 
-        const csrfToken = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('csrftoken='))
-            ?.split('=')[1];
+        const localEnrollments = (() => {
+            try {
+                const saved = localStorage.getItem(enrollmentStoreKey);
+                if (!saved) return new Map();
+                return new Map(JSON.parse(saved));
+            } catch (error) {
+                console.warn('Unable to restore enrollments', error);
+                return new Map();
+            }
+        })();
+
+        function persistEnrollments() {
+            try {
+                localStorage.setItem(enrollmentStoreKey, JSON.stringify([...localEnrollments]));
+            } catch (error) {
+                console.warn('Unable to persist enrollments', error);
+            }
+        }
 
         function setStatus(message, tone = 'info') {
             statusBox.textContent = message;
@@ -130,7 +146,7 @@
                 captureBtn.disabled = false;
                 stopCameraBtn.disabled = false;
                 startCameraBtn.disabled = true;
-                setStatus('Camera ready. Capture a frame to enroll or scan.', 'success');
+                setStatus('Camera ready. Capture a frame to enroll or scan locally.', 'success');
             } catch (error) {
                 console.error(error);
                 setStatus('Unable to access webcam. Please allow camera permissions.', 'error');
@@ -165,37 +181,26 @@
             snapshot.classList.remove('hidden');
             snapshot.toBlob(blob => {
                 lastBlob = blob;
+                lastCaptureSummary = {
+                    capturedAt: new Date().toISOString(),
+                    resolution: `${videoWidth}×${videoHeight}`,
+                };
                 enrollBtn.disabled = false;
                 scanBtn.disabled = false;
-                setStatus('Frame captured. Choose enroll or scan to send.', 'success');
+                setStatus('Frame captured. Choose enroll or scan to process locally.', 'success');
             }, 'image/jpeg', 0.9);
         }
 
-        async function postImage(url, extraFields = {}) {
+        function simulateDelay(ms = 400) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function ensureCapture() {
             if (!lastBlob) {
                 setStatus('Capture a frame first.', 'error');
-                return null;
+                throw new Error('No capture available');
             }
-            const formData = new FormData();
-            formData.append('image', lastBlob, 'frame.jpg');
-            Object.entries(extraFields).forEach(([key, value]) => {
-                if (value) {
-                    formData.append(key, value);
-                }
-            });
-
-            setStatus('Sending frame to server…', 'info');
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-                body: formData,
-            });
-
-            const payload = await response.json().catch(() => ({ detail: 'Unexpected response' }));
-            if (!response.ok) {
-                throw new Error(payload.detail || 'Request failed');
-            }
-            return payload;
+            return true;
         }
 
         enrollBtn.addEventListener('click', async () => {
@@ -205,8 +210,12 @@
                 return;
             }
             try {
-                await postImage('/api/entry-gate/enroll/', { student_id: studentId });
-                setStatus(`Enrollment saved for ${studentId}.`, 'success');
+                await ensureCapture();
+                setStatus('Saving enrollment locally…', 'info');
+                await simulateDelay();
+                localEnrollments.set(studentId, { ...lastCaptureSummary });
+                persistEnrollments();
+                setStatus(`Enrollment saved locally for ${studentId}.`, 'success');
             } catch (error) {
                 console.error(error);
                 setStatus(error.message, 'error');
@@ -215,8 +224,19 @@
 
         scanBtn.addEventListener('click', async () => {
             try {
+                await ensureCapture();
                 const action = actionSelect.value;
-                const event = await postImage('/api/entry-gate/scan/', { action });
+                const enrolledIds = [...localEnrollments.keys()];
+                const matchedId = studentIdInput.value.trim() || enrolledIds[enrolledIds.length - 1] || 'LOCAL-DEMO';
+
+                setStatus('Processing scan locally…', 'info');
+                await simulateDelay();
+
+                const event = {
+                    student: { student_id: matchedId },
+                    action,
+                    timestamp: new Date().toISOString(),
+                };
                 setStatus(`Scan recorded for ${event.student.student_id} (${event.action}).`, 'success');
             } catch (error) {
                 console.error(error);
