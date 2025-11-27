@@ -5,10 +5,8 @@ from django.shortcuts import get_object_or_404
 
 from .models import GateEvent
 from apps.students.models import Student
-from .face import FaceRecognition
 from .serializers import GateEventSerializer
-
-face = FaceRecognition()
+from .services import enroll_student_face, recognize_student_from_image
 
 class EnrollView(APIView):
     def post(self, request):
@@ -23,8 +21,12 @@ class EnrollView(APIView):
 
         student = get_object_or_404(Student, id=student_id)
 
-        # Enroll
-        face.enroll(student_id, image)
+        try:
+            enroll_student_face(student, image)
+        except ValueError as exc:
+            return Response(
+                {"detail": str(exc)}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         return Response({"detail": "Face enrolled successfully."})
 
@@ -38,15 +40,13 @@ class ScanView(APIView):
             return Response({"detail": "image is required."},
                             status=status.HTTP_400_BAD_REQUEST)
 
-        student_id = face.identify(image)
+        student = recognize_student_from_image(image)
 
-        if student_id is None:
+        if student is None:
             return Response(
                 {"detail": "No matching student found."},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_404_NOT_FOUND
             )
-
-        student = Student.objects.get(id=student_id)
 
         event = GateEvent.objects.create(
             student=student,
