@@ -38,7 +38,7 @@ def live_stats(_request):
 
     success_count = today_events.filter(success=True).count()
     total_events = today_events.count()
-    success_rate = round(success_count / total_events * 100, 1) if total_events else 100.0
+    success_rate = round(success_count / total_events * 100, 1) if total_events else 0.0
 
     latest_feed = [
         {
@@ -62,6 +62,7 @@ def live_stats(_request):
         "average_scan_time": 1.2,
         "live_feed": latest_feed,
         "last_updated": now.isoformat(),
+        "has_events_today": bool(total_events),
         "per_gate": list(
             today_events.values("action").annotate(total=Count("id")).order_by("action")
         ),

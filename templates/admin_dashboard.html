@@ -125,13 +125,14 @@
             try {
                 const response = await fetch('/api/live-stats/');
                 const data = await response.json();
+                const hasEvents = Boolean(data.has_events_today);
 
                 opsEvents.textContent = data.events_today;
                 opsPresent.textContent = data.present_today;
-                opsReliability.textContent = `${data.success_rate.toFixed(1)}%`;
+                opsReliability.textContent = hasEvents ? `${data.success_rate.toFixed(1)}%` : '—';
                 opsGates.textContent = data.active_gates;
 
-                opsFeed.innerHTML = (data.live_feed || []).slice(0, 4).map(item => `
+                opsFeed.innerHTML = hasEvents ? (data.live_feed || []).slice(0, 4).map(item => `
                     <div class="mini-feed-row">
                         <div>
                             <p class="feed-label">${item.action.toUpperCase()}</p>
@@ -139,16 +140,16 @@
                         </div>
                         <span>${new Date(item.time).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
                     </div>
-                `).join('') || '<p class="muted">No activity yet today.</p>';
+                `).join('') : '<p class="muted">No activity yet today.</p>';
 
-                feedTable.innerHTML = (data.live_feed || []).map(item => `
+                feedTable.innerHTML = hasEvents ? (data.live_feed || []).map(item => `
                     <div class="feed-row">
                         <span class="badge ${item.success ? 'ok' : 'warn'}">${item.action}</span>
                         <span>Student ${item.student}</span>
                         <span>${new Date(item.time).toLocaleString()}</span>
                         <span>${item.success ? 'Accepted' : 'Declined'}</span>
                     </div>
-                `).join('') || '<p class="muted">Live events will appear here as gates report in.</p>';
+                `).join('') : '<p class="muted">Live events will appear here as gates report in.</p>';
             } catch (error) {
                 console.error(error);
             }
