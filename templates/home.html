@@ -13,6 +13,7 @@
 <body>
     <div class="orb orb-a"></div>
     <div class="orb orb-b"></div>
+
     <header class="nav">
         <div class="nav-brand">
             <div class="logo">SEAS</div>
@@ -22,22 +23,23 @@
             </div>
         </div>
         <nav class="nav-links">
-            <a href="/ops/">Admin panel</a>
+            <a href="/ops/">Ops</a>
             <a href="/analytics/">Analytics</a>
-            <a href="/notifications/">Notifications</a>
+            <a href="/notifications/">Notify</a>
             <a class="ghost" href="/console/">Gate console</a>
+            <a class="pill" href="/admin/">Launch admin</a>
         </nav>
     </header>
 
     <main>
         <section class="hero">
-            <div class="hero-copy">
+            <div class="hero-copy fade-in">
                 <p class="eyebrow">Campus command center</p>
                 <h2>Streamlined access, transparent attendance, instant insight.</h2>
-                <p class="lede">Secure entry gates, live attendance capture, and proactive notifications in one cohesive platform. Built for operations teams that need to act before issues slow the day down.</p>
+                <p class="lede">Secure entry gates, live attendance capture, and proactive notifications in one cohesive platform. Built for operations teams that act before issues slow the day down.</p>
                 <div class="cta-row">
-                    <a class="btn primary" href="/admin/">Launch Django admin</a>
-                    <a class="btn" href="/ops/">Open ops panel</a>
+                    <a class="btn primary" href="/console/">Launch console</a>
+                    <a class="btn" href="/analytics/">View analytics</a>
                     <a class="btn ghost" href="/api/">API index</a>
                 </div>
                 <div class="pill-row">
@@ -46,7 +48,8 @@
                     <span>Audit-safe exports</span>
                 </div>
             </div>
-            <div class="hero-visual">
+
+            <div class="hero-visual slide-up">
                 <div class="live-card">
                     <div class="live-header">
                         <div class="pulse"></div>
@@ -75,9 +78,14 @@
                     </div>
                     <div class="feed" id="liveFeed"></div>
                 </div>
-                <div class="image-stack">
-                    <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=80" alt="Operations" />
-                    <div class="image-note">Operational visibility with real-time updates.</div>
+                <div class="glass-card">
+                    <p class="eyebrow">Minimal ops view</p>
+                    <p class="muted">Calm gradients, soft shadows, and motion cues inspired by Apple's Pages keep the console focused on signal over noise.</p>
+                    <div class="chip-row">
+                        <span class="chip">Gate uptime</span>
+                        <span class="chip">Attendance health</span>
+                        <span class="chip">Real-time alerts</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -87,43 +95,26 @@
                 <div class="icon">🔒</div>
                 <h3>Gate Security</h3>
                 <p>Biometric-ready verification keeps every entry authenticated and logged.</p>
+                <a class="link" href="/ops/">Control gates</a>
             </article>
             <article class="pillar">
                 <div class="icon">🕒</div>
                 <h3>Attendance</h3>
                 <p>Attendance is captured automatically so instructors can focus on teaching.</p>
+                <a class="link" href="/ops/">Track attendance</a>
             </article>
             <article class="pillar">
                 <div class="icon">📊</div>
                 <h3>Analytics</h3>
                 <p>Spot anomalies, track gate activity, and export insights for compliance.</p>
+                <a class="link" href="/analytics/">See insights</a>
             </article>
             <article class="pillar">
                 <div class="icon">🔔</div>
                 <h3>Notifications</h3>
                 <p>Automated alerts keep staff informed of late arrivals and access issues.</p>
+                <a class="link" href="/notifications/">Configure alerts</a>
             </article>
-        </section>
-
-        <section class="panels">
-            <div class="panel-card">
-                <p class="eyebrow">Ops panel</p>
-                <h3>Control every gate from one clean cockpit</h3>
-                <p class="muted">Monitor live scans, confirm attendance, and nudge staff with operational notices. The panel is optimized for tablets mounted in security offices.</p>
-                <a class="btn primary" href="/ops/">Open the ops panel</a>
-            </div>
-            <div class="panel-card">
-                <p class="eyebrow">Analytics</p>
-                <h3>Evidence-ready analytics for leadership</h3>
-                <p class="muted">Daily throughput, peak load windows, and reliability percentages are pre-computed so you can export reports in seconds.</p>
-                <a class="btn" href="/analytics/">View analytics</a>
-            </div>
-            <div class="panel-card">
-                <p class="eyebrow">Notifications</p>
-                <h3>Push updates to the right people</h3>
-                <p class="muted">Template out SMS/email alerts for late arrivals or blocked entries, then route them by grade, group, or gate.</p>
-                <a class="btn ghost" href="/notifications/">Configure notifications</a>
-            </div>
         </section>
 
         <section class="callout">
