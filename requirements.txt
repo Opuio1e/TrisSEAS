@@ -1,0 +1,12 @@
+Django
+djangorestframework
+psycopg2-binary
+python-dotenv
+redis
+django-cors-headers
+gunicorn
+Pillow
+cryptography
+celery[redis]
+requests
+face-recognition
