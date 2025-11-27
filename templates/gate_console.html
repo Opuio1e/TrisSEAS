@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate Console | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/gate_console.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">TrisSEAS Console</div>
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/admin/">Admin</a>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Live capture</p>
+                    <h1>Use your laptop webcam</h1>
+                    <p class="lede">Start the camera, capture a frame, and send it to the Entry Gate API. You can enroll a student or perform a gate scan.</p>
+                </div>
+                <div class="chip">RFID-ready</div>
+            </div>
+
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-frame">
+                        <video id="camera" autoplay playsinline></video>
+                        <canvas id="snapshot" class="hidden"></canvas>
+                        <div id="videoOverlay" class="overlay hidden">Camera offline</div>
+                    </div>
+                    <div class="controls">
+                        <button id="startCamera" class="btn primary">Start camera</button>
+                        <button id="stopCamera" class="btn ghost" disabled>Stop camera</button>
+                        <button id="capture" class="btn" disabled>Capture frame</button>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="field">
+                        <label for="action">Action</label>
+                        <select id="action">
+                            <option value="entry">Entry</option>
+                            <option value="exit">Exit</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="studentId">Student ID (for enrollment)</label>
+                        <input type="text" id="studentId" placeholder="e.g., STU-2024-001">
+                        <p class="help">When scanning, the face match drives the student lookup. Provide the ID only when enrolling.</p>
+                    </div>
+                    <div class="actions">
+                        <button id="enroll" class="btn primary" disabled>Enroll face</button>
+                        <button id="scan" class="btn" disabled>Run scan</button>
+                    </div>
+                    <div class="status" id="status">Waiting to start camera…</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">Hardware bridge</p>
+                    <h2>RFID scanner integration</h2>
+                    <p class="lede">Plug in your USB RFID reader alongside the webcam. Most readers emulate a keyboard: tap a card to autofill the RFID field on the Student admin page.</p>
+                </div>
+            </div>
+            <div class="rfid-grid">
+                <div class="card">
+                    <h3>Admin workflow</h3>
+                    <ol>
+                        <li>Open <a href="/admin/" target="_blank" rel="noreferrer">Admin &raquo; Students</a>.</li>
+                        <li>Click a student and place the cursor in the <strong>RFID tag</strong> box.</li>
+                        <li>Present the card to your scanner; the value is captured instantly.</li>
+                    </ol>
+                </div>
+                <div class="card">
+                    <h3>Tips</h3>
+                    <ul>
+                        <li>Keep the webcam running while you test RFID so you can validate full gate events.</li>
+                        <li>Use the <em>Run scan</em> button to generate Gate Events in real time.</li>
+                        <li>If your scanner requires drivers, install them before opening this page.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const camera = document.getElementById('camera');
+        const snapshot = document.getElementById('snapshot');
+        const overlay = document.getElementById('videoOverlay');
+        const startCameraBtn = document.getElementById('startCamera');
+        const stopCameraBtn = document.getElementById('stopCamera');
+        const captureBtn = document.getElementById('capture');
+        const enrollBtn = document.getElementById('enroll');
+        const scanBtn = document.getElementById('scan');
+        const statusBox = document.getElementById('status');
+        const studentIdInput = document.getElementById('studentId');
+        const actionSelect = document.getElementById('action');
+
+        let stream;
+        let lastBlob;
+
+        const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+
+        function setStatus(message, tone = 'info') {
+            statusBox.textContent = message;
+            statusBox.dataset.tone = tone;
+        }
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                camera.srcObject = stream;
+                camera.classList.remove('hidden');
+                overlay.classList.add('hidden');
+                captureBtn.disabled = false;
+                stopCameraBtn.disabled = false;
+                startCameraBtn.disabled = true;
+                setStatus('Camera ready. Capture a frame to enroll or scan.', 'success');
+            } catch (error) {
+                console.error(error);
+                setStatus('Unable to access webcam. Please allow camera permissions.', 'error');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            camera.srcObject = null;
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            captureBtn.disabled = true;
+            enrollBtn.disabled = true;
+            scanBtn.disabled = true;
+            overlay.classList.remove('hidden');
+            setStatus('Camera stopped.', 'info');
+        }
+
+        function captureFrame() {
+            if (!stream) {
+                setStatus('Start the camera first.', 'error');
+                return;
+            }
+            const { videoWidth, videoHeight } = camera;
+            snapshot.width = videoWidth;
+            snapshot.height = videoHeight;
+            const context = snapshot.getContext('2d');
+            context.drawImage(camera, 0, 0, videoWidth, videoHeight);
+            snapshot.classList.remove('hidden');
+            snapshot.toBlob(blob => {
+                lastBlob = blob;
+                enrollBtn.disabled = false;
+                scanBtn.disabled = false;
+                setStatus('Frame captured. Choose enroll or scan to send.', 'success');
+            }, 'image/jpeg', 0.9);
+        }
+
+        async function postImage(url, extraFields = {}) {
+            if (!lastBlob) {
+                setStatus('Capture a frame first.', 'error');
+                return null;
+            }
+            const formData = new FormData();
+            formData.append('image', lastBlob, 'frame.jpg');
+            Object.entries(extraFields).forEach(([key, value]) => {
+                if (value) {
+                    formData.append(key, value);
+                }
+            });
+
+            setStatus('Sending frame to server…', 'info');
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
+                body: formData,
+            });
+
+            const payload = await response.json().catch(() => ({ detail: 'Unexpected response' }));
+            if (!response.ok) {
+                throw new Error(payload.detail || 'Request failed');
+            }
+            return payload;
+        }
+
+        enrollBtn.addEventListener('click', async () => {
+            const studentId = studentIdInput.value.trim();
+            if (!studentId) {
+                setStatus('Enter a Student ID to enroll.', 'error');
+                return;
+            }
+            try {
+                await postImage('/api/entry-gate/enroll/', { student_id: studentId });
+                setStatus(`Enrollment saved for ${studentId}.`, 'success');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message, 'error');
+            }
+        });
+
+        scanBtn.addEventListener('click', async () => {
+            try {
+                const action = actionSelect.value;
+                const event = await postImage('/api/entry-gate/scan/', { action });
+                setStatus(`Scan recorded for ${event.student.student_id} (${event.action}).`, 'success');
+            } catch (error) {
+                console.error(error);
+                setStatus(error.message, 'error');
+            }
+        });
+
+        startCameraBtn.addEventListener('click', startCamera);
+        stopCameraBtn.addEventListener('click', stopCamera);
+        captureBtn.addEventListener('click', captureFrame);
+    </script>
+</body>
+</html>
