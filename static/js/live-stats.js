@@ -32,9 +32,21 @@
       const response = await fetch('/api/live-stats/');
       const data = await response.json();
 
-      onTimeEl.textContent = `${data.success_rate.toFixed(1)}%`;
+      const hasEvents = Boolean(data.has_events_today);
+
       studentsEl.textContent = data.students.toLocaleString();
       gatesEl.textContent = data.active_gates.toString();
+
+      if (!hasEvents) {
+        onTimeEl.textContent = '—';
+        scanEl.textContent = '—';
+        updatedEl.textContent = 'Waiting for gate activity';
+        document.documentElement.style.setProperty('--live-accent', '#9ba3b4');
+        renderFeed([]);
+        return;
+      }
+
+      onTimeEl.textContent = `${data.success_rate.toFixed(1)}%`;
       scanEl.textContent = `${data.average_scan_time}s`;
       updatedEl.textContent = `Updated ${new Date(data.last_updated).toLocaleTimeString()}`;
       renderFeed(data.live_feed || []);

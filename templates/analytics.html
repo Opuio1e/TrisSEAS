@@ -89,19 +89,22 @@
         async function loadAnalytics() {
             const response = await fetch('/api/live-stats/');
             const data = await response.json();
+            const hasEvents = Boolean(data.has_events_today);
             const entries = data.per_gate.find(p => p.action === 'entry')?.total || 0;
             const exits = data.per_gate.find(p => p.action === 'exit')?.total || 0;
             const max = Math.max(entries, exits, 1);
 
-            barEntry.style.width = `${(entries / max) * 100}%`;
-            barExit.style.width = `${(exits / max) * 100}%`;
-            barOverall.style.width = `${data.success_rate}%`;
-            chartMeta.textContent = `Based on ${data.events_today} events today`;
+            barEntry.style.width = hasEvents ? `${(entries / max) * 100}%` : '0%';
+            barExit.style.width = hasEvents ? `${(exits / max) * 100}%` : '0%';
+            barOverall.style.width = hasEvents ? `${data.success_rate}%` : '0%';
+            chartMeta.textContent = hasEvents
+                ? `Based on ${data.events_today} events today`
+                : 'No gate events reported yet today.';
 
             anStudents.textContent = data.students;
             anEvents.textContent = data.events_24h;
             anPresent.textContent = data.present_today;
-            anReliability.textContent = `${data.success_rate.toFixed(1)}%`;
+            anReliability.textContent = hasEvents ? `${data.success_rate.toFixed(1)}%` : '—';
         }
 
         loadAnalytics();
