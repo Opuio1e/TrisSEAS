@@ -15,7 +15,8 @@
         <div class="brand">TrisSEAS Console</div>
         <div class="links">
             <a href="/">Home</a>
-            <a href="/admin/">Admin</a>
+            <a href="/admin/panel/">Admin panel</a>
+            <a href="/admin/">Django admin</a>
         </div>
     </header>
 
@@ -42,6 +43,16 @@
                         <button id="stopCamera" class="btn ghost" disabled>Stop camera</button>
                         <button id="capture" class="btn" disabled>Capture frame</button>
                     </div>
+                    <div class="meta-grid">
+                        <div>
+                            <p class="muted">Last capture</p>
+                            <p id="metaCaptured">—</p>
+                        </div>
+                        <div>
+                            <p class="muted">Resolution</p>
+                            <p id="metaResolution">—</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-card">
@@ -63,6 +74,14 @@
                     </div>
                     <div class="status" id="status">Waiting to start camera…</div>
                 </div>
+
+                <aside class="session">
+                    <div class="session-head">
+                        <p class="eyebrow">Session log</p>
+                        <button id="clearLog" class="btn ghost" type="button">Clear</button>
+                    </div>
+                    <div class="log" id="log"></div>
+                </aside>
             </div>
         </section>
 
@@ -78,7 +97,7 @@
                 <div class="card">
                     <h3>Admin workflow</h3>
                     <ol>
-                        <li>Open <a href="/admin/" target="_blank" rel="noreferrer">Admin &raquo; Students</a>.</li>
+                        <li>Open <a href="/admin/" target="_blank" rel="noreferrer">Admin » Students</a>.</li>
                         <li>Click a student and place the cursor in the <strong>RFID tag</strong> box.</li>
                         <li>Present the card to your scanner; the value is captured instantly.</li>
                     </ol>
@@ -107,11 +126,16 @@
         const statusBox = document.getElementById('status');
         const studentIdInput = document.getElementById('studentId');
         const actionSelect = document.getElementById('action');
+        const metaCaptured = document.getElementById('metaCaptured');
+        const metaResolution = document.getElementById('metaResolution');
+        const logContainer = document.getElementById('log');
+        const clearLogBtn = document.getElementById('clearLog');
 
         let stream;
         let lastBlob;
         let lastCaptureSummary;
         const enrollmentStoreKey = 'trisseas-local-enrollments';
+        const sessionLog = [];
 
         const localEnrollments = (() => {
             try {
@@ -137,6 +161,20 @@
             statusBox.dataset.tone = tone;
         }
 
+        function addLog(message, tone = 'info') {
+            const row = document.createElement('div');
+            row.className = `log-row ${tone}`;
+            row.textContent = message;
+            logContainer.prepend(row);
+            sessionLog.unshift({ message, tone, at: new Date() });
+        }
+
+        function renderCaptureMeta(summary) {
+            if (!summary) return;
+            metaCaptured.textContent = new Date(summary.capturedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            metaResolution.textContent = summary.resolution;
+        }
+
         async function startCamera() {
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -147,9 +185,11 @@
                 stopCameraBtn.disabled = false;
                 startCameraBtn.disabled = true;
                 setStatus('Camera ready. Capture a frame to enroll or scan locally.', 'success');
+                addLog('Camera started', 'success');
             } catch (error) {
                 console.error(error);
                 setStatus('Unable to access webcam. Please allow camera permissions.', 'error');
+                addLog('Camera blocked by browser', 'error');
             }
         }
 
@@ -166,6 +206,7 @@
             scanBtn.disabled = true;
             overlay.classList.remove('hidden');
             setStatus('Camera stopped.', 'info');
+            addLog('Camera stopped', 'info');
         }
 
         function captureFrame() {
@@ -187,7 +228,9 @@
                 };
                 enrollBtn.disabled = false;
                 scanBtn.disabled = false;
+                renderCaptureMeta(lastCaptureSummary);
                 setStatus('Frame captured. Choose enroll or scan to process locally.', 'success');
+                addLog('Frame captured', 'success');
             }, 'image/jpeg', 0.9);
         }
 
@@ -216,9 +259,11 @@
                 localEnrollments.set(studentId, { ...lastCaptureSummary });
                 persistEnrollments();
                 setStatus(`Enrollment saved locally for ${studentId}.`, 'success');
+                addLog(`Enrollment saved for ${studentId}`, 'success');
             } catch (error) {
                 console.error(error);
                 setStatus(error.message, 'error');
+                addLog(error.message, 'error');
             }
         });
 
@@ -238,10 +283,17 @@
                     timestamp: new Date().toISOString(),
                 };
                 setStatus(`Scan recorded for ${event.student.student_id} (${event.action}).`, 'success');
+                addLog(`Scan ${event.action} for ${event.student.student_id}`, 'success');
             } catch (error) {
                 console.error(error);
                 setStatus(error.message, 'error');
+                addLog(error.message, 'error');
             }
+        });
+
+        clearLogBtn.addEventListener('click', () => {
+            sessionLog.length = 0;
+            logContainer.innerHTML = '';
         });
 
         startCameraBtn.addEventListener('click', startCamera);

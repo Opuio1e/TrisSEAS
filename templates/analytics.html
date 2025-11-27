@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Analytics cockpit</div>
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/admin/panel/">Admin panel</a>
+            <a href="/notifications/">Notifications</a>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Real-time telemetry</p>
+                <h1>Live attendance and gate intelligence</h1>
+                <p class="lede">Today is {{ today }}. Track hourly gates, weekly momentum, and who is driving the most activity.</p>
+                <div class="chip-row">
+                    <span class="chip">{{ total_students }} students</span>
+                    <span class="chip">{{ present_today }} present</span>
+                    <span class="chip">{{ attendance_rate }}% attendance</span>
+                </div>
+            </div>
+            <div class="hero-card">
+                <p class="muted">Quick snapshot</p>
+                <h3>{{ attendance_rate }}% attendance</h3>
+                <p class="delta">{{ present_today }} of {{ total_students }} students recorded today.</p>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Hourly activity</p>
+                        <h3>Gate volume today</h3>
+                    </div>
+                </div>
+                <div class="bars">
+                    {% for item in hourly_activity %}
+                    <div class="bar-row">
+                        <span class="bar-label">{{ item.hour|date:'H:i' }}</span>
+                        <div class="bar-track">
+                            <span style="width: {{ item.count|add:4 }}%;"></span>
+                        </div>
+                        <span class="bar-value">{{ item.count }}</span>
+                    </div>
+                    {% empty %}
+                    <p class="muted">No gate data for today yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Week to date</p>
+                        <h3>Entries and exits</h3>
+                    </div>
+                </div>
+                <div class="pills">
+                    {% for item in weekly_events %}
+                    <div class="pill-card">
+                        <p class="muted">{{ item.action|title }}</p>
+                        <h2>{{ item.count }}</h2>
+                        <p class="delta">Past 7 days</p>
+                    </div>
+                    {% empty %}
+                    <p class="muted">No weekly activity recorded.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Top movers</p>
+                    <h3>Most active IDs this week</h3>
+                </div>
+                <a class="text-link" href="/admin/entry_gate/gateevent/">Open gate events →</a>
+            </div>
+            <div class="table">
+                <div class="table-head">
+                    <span>Student</span>
+                    <span>Events</span>
+                </div>
+                {% for student in top_students %}
+                <div class="table-row">
+                    <span>{{ student.student__student_id }} · {{ student.student__user__first_name }} {{ student.student__user__last_name }}</span>
+                    <span class="muted">{{ student.count }} events</span>
+                </div>
+                {% empty %}
+                <p class="muted">No activity to display yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+</html>

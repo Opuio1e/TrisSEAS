@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Room | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_panel.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">SEAS Control Room</div>
+        <div class="links">
+            <a href="/">Home</a>
+            <a href="/admin/">Django Admin</a>
+            <a href="/console/">Gate Console</a>
+        </div>
+    </header>
+
+    <main class="layout">
+        <section class="panel wide">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Operations snapshot</p>
+                    <h1>Live visibility for staff</h1>
+                    <p class="lede">Monitor attendance, gate activity, and quick actions without leaving the admin area. The snapshot refreshes automatically every 10 seconds.</p>
+                </div>
+                <span id="statusPill" class="pill success">Live</span>
+            </div>
+            <div class="kpi-grid">
+                <article class="kpi">
+                    <p class="muted">Total students</p>
+                    <h2 id="kpiStudents">{{ snapshot.total_students }}</h2>
+                    <p class="delta">Roster synced</p>
+                </article>
+                <article class="kpi">
+                    <p class="muted">Entries today</p>
+                    <h2 id="kpiEntries">{{ snapshot.entries_today }}</h2>
+                    <p class="delta">Auto-updating</p>
+                </article>
+                <article class="kpi">
+                    <p class="muted">Exits today</p>
+                    <h2 id="kpiExits">{{ snapshot.exits_today }}</h2>
+                    <p class="delta">Based on gate events</p>
+                </article>
+                <article class="kpi">
+                    <p class="muted">Attendance rate</p>
+                    <h2><span id="kpiAttendance">{{ snapshot.attendance_rate }}</span>%</h2>
+                    <p class="delta">Present records</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Quick actions</p>
+                    <h2>Run the most common workflows</h2>
+                </div>
+            </div>
+            <div class="action-grid">
+                <a class="action-card" href="/admin/students/student/">
+                    <div class="icon">👤</div>
+                    <div>
+                        <h3>Manage students</h3>
+                        <p>Open the Student model to edit RFID tags or update account details.</p>
+                    </div>
+                </a>
+                <a class="action-card" href="/admin/entry_gate/gateevent/">
+                    <div class="icon">🚪</div>
+                    <div>
+                        <h3>Review gate events</h3>
+                        <p>Filter by date, export CSV, or flag anomalies straight from admin.</p>
+                    </div>
+                </a>
+                <a class="action-card" href="/notifications/">
+                    <div class="icon">🔔</div>
+                    <div>
+                        <h3>Notification center</h3>
+                        <p>Send campus-wide alerts and see responses in the dedicated hub.</p>
+                    </div>
+                </a>
+                <a class="action-card" href="/analytics/">
+                    <div class="icon">📊</div>
+                    <div>
+                        <h3>Analytics dashboard</h3>
+                        <p>Audit live attendance, busiest hours, and recurring traffic patterns.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="panel two-col">
+            <div>
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Recent activity</p>
+                        <h2>Live gate feed</h2>
+                    </div>
+                </div>
+                <div class="feed" id="liveFeed">
+                    {% for event in snapshot.recent_events %}
+                    <article class="feed-row">
+                        <div class="dot"></div>
+                        <div>
+                            <p class="feed-title">{{ event.student_id }} · {{ event.name }}</p>
+                            <p class="feed-meta">{{ event.action|title }} · {{ event.timestamp|date:'H:i' }}</p>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <p class="muted">No recent gate events yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Weekly rollup</p>
+                        <h2>Entries vs exits</h2>
+                    </div>
+                </div>
+                <div class="weekly">
+                    {% for item in weekly_events %}
+                    <div class="bar">
+                        <div class="bar-label">{{ item.action|title }}</div>
+                        <div class="bar-track">
+                            <span style="width: {{ item.count|add:5 }}%;"></span>
+                        </div>
+                        <div class="bar-count">{{ item.count }} events</div>
+                    </div>
+                    {% empty %}
+                    <p class="muted">No events recorded this week.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function refreshAdminSnapshot() {
+            const pill = document.getElementById('statusPill');
+            try {
+                const res = await fetch('/api/live-snapshot/');
+                if (!res.ok) throw new Error('offline');
+                const data = await res.json();
+                document.getElementById('kpiStudents').textContent = data.total_students;
+                document.getElementById('kpiEntries').textContent = data.entries_today;
+                document.getElementById('kpiExits').textContent = data.exits_today;
+                document.getElementById('kpiAttendance').textContent = data.attendance_rate;
+                pill.textContent = 'Live';
+                pill.classList.remove('error');
+                pill.classList.add('success');
+
+                const feed = document.getElementById('liveFeed');
+                feed.innerHTML = '';
+                if (data.recent_events.length === 0) {
+                    const p = document.createElement('p');
+                    p.className = 'muted';
+                    p.textContent = 'No recent gate events yet.';
+                    feed.appendChild(p);
+                } else {
+                    data.recent_events.forEach(event => {
+                        const row = document.createElement('article');
+                        row.className = 'feed-row';
+                        row.innerHTML = `
+                            <div class="dot"></div>
+                            <div>
+                                <p class="feed-title">${event.student_id} · ${event.name}</p>
+                                <p class="feed-meta">${event.action.charAt(0).toUpperCase() + event.action.slice(1)} · ${new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                            </div>
+                        `;
+                        feed.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                pill.textContent = 'Offline';
+                pill.classList.remove('success');
+                pill.classList.add('error');
+            }
+        }
+
+        refreshAdminSnapshot();
+        setInterval(refreshAdminSnapshot, 10000);
+    </script>
+</body>
+</html>
