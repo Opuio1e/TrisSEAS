@@ -1,0 +1,28 @@
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: #0a0f1e; color: #e5e7eb; }
+a { color: inherit; text-decoration: none; }
+.topbar { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid #162036; background: rgba(10, 15, 30, 0.9); position: sticky; top: 0; z-index: 10; }
+nav a { margin-left: 12px; color: #9bb8ff; font-weight: 600; }
+.layout { max-width: 1100px; margin: 24px auto 48px; padding: 0 18px; display: grid; gap: 18px; }
+.hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; align-items: center; }
+.eyebrow { color: #22d3ee; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; margin: 0; }
+h1 { margin: 6px 0; font-size: clamp(28px, 4vw, 40px); }
+.lede { color: #9ca3af; margin: 8px 0 12px; }
+.card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.25); }
+.card ul { color: #c9d7ff; padding-left: 16px; line-height: 1.5; }
+.grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; }
+.panel { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 14px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-weight: 700; margin-bottom: 6px; }
+select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.02); color: #e5e7eb; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chips label { padding: 8px 10px; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: rgba(255,255,255,0.02); display: flex; gap: 6px; align-items: center; }
+.btn { padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: linear-gradient(135deg, #22d3ee, #6366f1); color: #0b1220; font-weight: 800; width: 100%; }
+.preview { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 12px; min-height: 160px; color: #c9d7ff; }
+.preview-card { padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); margin-bottom: 8px; }
+.muted { color: #9bb8ff; }
+
+@media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; }
+    .grid { grid-template-columns: 1fr; }
+}

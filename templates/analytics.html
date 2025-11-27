@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/analytics.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">TrisSEAS Analytics</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/ops/">Ops panel</a>
+            <a href="/notifications/">Notifications</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Insights</p>
+                <h1>Evidence-ready reports for leadership.</h1>
+                <p class="lede">Throughput, reliability, and attendance trends are ready to export. Keep leadership informed with clear visuals and concise metrics.</p>
+                <div class="cta-row">
+                    <a class="btn" href="/admin/entry_gate/gateevent/">View gate events</a>
+                    <a class="btn ghost" href="/admin/attendance/attendancerecord/">Attendance records</a>
+                </div>
+            </div>
+            <div class="chart-card">
+                <p class="eyebrow">Reliability</p>
+                <div class="bar-group">
+                    <div class="bar"><span>Entries</span><div class="bar-fill" id="barEntry"></div></div>
+                    <div class="bar"><span>Exits</span><div class="bar-fill" id="barExit"></div></div>
+                    <div class="bar"><span>Overall</span><div class="bar-fill" id="barOverall"></div></div>
+                </div>
+                <p class="muted" id="chartMeta">Syncing…</p>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <p class="eyebrow">Highlights</p>
+                <div class="stat-grid">
+                    <div class="stat">
+                        <p class="stat-value" id="anStudents">--</p>
+                        <p class="stat-label">Enrolled students</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-value" id="anEvents">--</p>
+                        <p class="stat-label">Events (24h)</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-value" id="anPresent">--</p>
+                        <p class="stat-label">Present today</p>
+                    </div>
+                    <div class="stat">
+                        <p class="stat-value" id="anReliability">--%</p>
+                        <p class="stat-label">Reliability</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <p class="eyebrow">Trend notes</p>
+                <ul class="notes">
+                    <li><strong>Peaks</strong> – identify morning rush by comparing entries between 7-9 AM.</li>
+                    <li><strong>Exits</strong> – watch for early departures; alerts can be routed from the notifications page.</li>
+                    <li><strong>Attendance</strong> – correlate present counts with gate events to find friction points.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const barEntry = document.getElementById('barEntry');
+        const barExit = document.getElementById('barExit');
+        const barOverall = document.getElementById('barOverall');
+        const chartMeta = document.getElementById('chartMeta');
+        const anStudents = document.getElementById('anStudents');
+        const anEvents = document.getElementById('anEvents');
+        const anPresent = document.getElementById('anPresent');
+        const anReliability = document.getElementById('anReliability');
+
+        async function loadAnalytics() {
+            const response = await fetch('/api/live-stats/');
+            const data = await response.json();
+            const entries = data.per_gate.find(p => p.action === 'entry')?.total || 0;
+            const exits = data.per_gate.find(p => p.action === 'exit')?.total || 0;
+            const max = Math.max(entries, exits, 1);
+
+            barEntry.style.width = `${(entries / max) * 100}%`;
+            barExit.style.width = `${(exits / max) * 100}%`;
+            barOverall.style.width = `${data.success_rate}%`;
+            chartMeta.textContent = `Based on ${data.events_today} events today`;
+
+            anStudents.textContent = data.students;
+            anEvents.textContent = data.events_24h;
+            anPresent.textContent = data.present_today;
+            anReliability.textContent = `${data.success_rate.toFixed(1)}%`;
+        }
+
+        loadAnalytics();
+        setInterval(loadAnalytics, 15000);
+    </script>
+</body>
+</html>
