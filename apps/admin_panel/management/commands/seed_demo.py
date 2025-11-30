@@ -16,22 +16,81 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
 
-        admin_user, created_admin = User.objects.get_or_create(
-            username="admin",
-            defaults={
+        demo_accounts = [
+            {
+                "username": "admin@example.com",
                 "email": "admin@example.com",
+                "password": "AdminPass123",
                 "first_name": "Admin",
                 "last_name": "User",
+                "role": "admin",
                 "is_staff": True,
                 "is_superuser": True,
+                "label": "admin",
             },
-        )
-        if created_admin:
-            admin_user.set_password("admin")
-            admin_user.save()
-            self.stdout.write(self.style.SUCCESS("Created admin user (admin/admin)."))
-        else:
-            self.stdout.write(self.style.WARNING("Admin user already exists; leaving credentials unchanged."))
+            {
+                "username": "teacher@example.com",
+                "email": "teacher@example.com",
+                "password": "TeacherPass123",
+                "first_name": "Taylor",
+                "last_name": "Teacher",
+                "role": "teacher",
+                "is_staff": False,
+                "is_superuser": False,
+                "label": "teacher",
+            },
+            {
+                "username": "student@example.com",
+                "email": "student@example.com",
+                "password": "StudentPass123",
+                "first_name": "Sam",
+                "last_name": "Student",
+                "role": "student",
+                "is_staff": False,
+                "is_superuser": False,
+                "label": "student",
+            },
+        ]
+
+        demo_users = {}
+        for account in demo_accounts:
+            user, created_user = User.objects.get_or_create(
+                username=account["username"],
+                defaults={
+                    "email": account["email"],
+                    "first_name": account["first_name"],
+                    "last_name": account["last_name"],
+                    "role": account["role"],
+                    "is_staff": account["is_staff"],
+                    "is_superuser": account["is_superuser"],
+                },
+            )
+
+            updated_fields = []
+            for field in [
+                "email",
+                "first_name",
+                "last_name",
+                "role",
+                "is_staff",
+                "is_superuser",
+            ]:
+                if getattr(user, field) != account[field]:
+                    setattr(user, field, account[field])
+                    updated_fields.append(field)
+
+            user.set_password(account["password"])
+            updated_fields.append("password")
+            if updated_fields:
+                user.save(update_fields=updated_fields)
+
+            demo_users[account["label"]] = user
+            status_method = self.style.SUCCESS if created_user else self.style.WARNING
+            self.stdout.write(
+                status_method(
+                    f"{account['label'].capitalize()} user ready (username/email: {account['email']}, password: {account['password']})."
+                )
+            )
 
         roster = [
             ("STU-1001", "Taylor", "Reed", "1001-0001"),
@@ -44,14 +103,18 @@ class Command(BaseCommand):
 
         students = []
         for idx, (student_id, first_name, last_name, rfid_tag) in enumerate(roster, start=1):
-            user, _ = User.objects.get_or_create(
-                username=student_id.lower(),
-                defaults={
-                    "first_name": first_name,
-                    "last_name": last_name,
-                    "email": f"{first_name.lower()}.{last_name.lower()}@example.com",
-                },
-            )
+            if idx == 1:
+                user = demo_users.get("student")
+            else:
+                user, _ = User.objects.get_or_create(
+                    username=student_id.lower(),
+                    defaults={
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "email": f"{first_name.lower()}.{last_name.lower()}@example.com",
+                        "role": "student",
+                    },
+                )
 
             student, created_student = Student.objects.get_or_create(
                 student_id=student_id,
@@ -125,4 +188,9 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS("Demo gate activity created for the last 24 hours."))
 
-        self.stdout.write(self.style.SUCCESS("Demo dataset ready. Log in at /admin with admin/admin."))
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Demo dataset ready. Example logins: admin@example.com/AdminPass123, "
+                "teacher@example.com/TeacherPass123, student@example.com/StudentPass123."
+            )
+        )
