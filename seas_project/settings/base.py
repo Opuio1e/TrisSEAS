@@ -100,6 +100,8 @@ DATABASES = {
 # CUSTOM USER MODEL
 # ----------------------------------------------------
 AUTH_USER_MODEL = "users.User"
+LOGIN_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 # ----------------------------------------------------
 # PASSWORD VALIDATION
