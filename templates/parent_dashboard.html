@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Parent Dashboard</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/ops/">Ops panel</a>
+            <a href="/analytics/">Analytics</a>
+            <a href="/notifications/">Notifications</a>
+            <a href="/student/">Students</a>
+            <a href="/parent/">Parents</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Parent view</p>
+                <h1>Stay connected to your child's day.</h1>
+                <p class="lede">Arrival status, attendance history, and timely alerts keep parents informed without needing to call the front desk.</p>
+                <div class="chip-row">
+                    <span>Child status</span>
+                    <span>Attendance history</span>
+                    <span>Alerts</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="card">
+                    <p class="eyebrow">Child status</p>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <p class="stat-value">Checked in</p>
+                            <p class="stat-label">08:05 AM</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value ok">Present</p>
+                            <p class="stat-label">Today</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value">No alerts</p>
+                            <p class="stat-label">Last 24h</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value">Pickup: 3:30</p>
+                            <p class="stat-label">Reminder</p>
+                        </div>
+                    </div>
+                    <p class="muted">Live data streams from campus gates</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Attendance history</p>
+                        <h2>This week's entries</h2>
+                    </div>
+                    <span class="chip">Live</span>
+                </div>
+                <div class="feed-table">
+                    <div class="feed-row">
+                        <span class="badge ok">Mon</span>
+                        <span>08:05 AM</span>
+                        <span>Entry</span>
+                        <span class="badge ok">On time</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Tue</span>
+                        <span>08:03 AM</span>
+                        <span>Entry</span>
+                        <span class="badge ok">On time</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge warn">Wed</span>
+                        <span>08:22 AM</span>
+                        <span>Entry</span>
+                        <span class="badge warn">Late</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Thu</span>
+                        <span>08:04 AM</span>
+                        <span>Entry</span>
+                        <span class="badge ok">On time</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Fri</span>
+                        <span>08:01 AM</span>
+                        <span>Entry</span>
+                        <span class="badge ok">On time</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Alerts</p>
+                        <h2>What parents need to know</h2>
+                    </div>
+                    <a class="btn ghost" href="/notifications/">Configure</a>
+                </div>
+                <div class="mini-feed">
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Late arrival</p>
+                            <p class="muted">Automated SMS when arrival is after 8:15 AM</p>
+                        </div>
+                        <span>Enabled</span>
+                    </div>
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Early pickup</p>
+                            <p class="muted">Request code is sent to registered contacts</p>
+                        </div>
+                        <span>Enabled</span>
+                    </div>
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Bus delay</p>
+                            <p class="muted">Parent notifications if bus is +10 minutes</p>
+                        </div>
+                        <span>Ready</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Contacts</p>
+                        <h2>Household details</h2>
+                    </div>
+                    <a class="btn" href="/admin/students/student/">Update</a>
+                </div>
+                <div class="actions">
+                    <div class="action">
+                        <div>👩‍👧</div>
+                        <div>
+                            <p>Parent/Guardian</p>
+                            <small>Jordan Rivera · +1 555-123-4567</small>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div>🏠</div>
+                        <div>
+                            <p>Pickup preference</p>
+                            <small>Main entrance unless notified</small>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div>📬</div>
+                        <div>
+                            <p>Notifications</p>
+                            <small>SMS + Email enabled</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

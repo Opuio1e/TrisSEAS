@@ -8,6 +8,8 @@ from apps.admin_panel.views import (
     AnalyticsView,
     GateConsoleView,
     NotificationsView,
+    ParentDashboardView,
+    StudentDashboardView,
     live_stats,
 )
 
@@ -25,6 +27,8 @@ urlpatterns = [
     path("ops/", AdminDashboardView.as_view(), name="admin-dashboard"),
     path("analytics/", AnalyticsView.as_view(), name="analytics"),
     path("notifications/", NotificationsView.as_view(), name="notifications"),
+    path("student/", StudentDashboardView.as_view(), name="student-dashboard"),
+    path("parent/", ParentDashboardView.as_view(), name="parent-dashboard"),
     path("api/live-stats/", live_stats, name="live-stats"),
     path("api/students/", include("apps.students.urls")),
     path("api/entry-gate/", include("apps.entry_gate.urls")),
