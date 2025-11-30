@@ -26,6 +26,14 @@ class NotificationsView(TemplateView):
     template_name = "notifications.html"
 
 
+class StudentDashboardView(TemplateView):
+    template_name = "student_dashboard.html"
+
+
+class ParentDashboardView(TemplateView):
+    template_name = "parent_dashboard.html"
+
+
 def live_stats(_request):
     now = timezone.now()
     today = timezone.localdate()

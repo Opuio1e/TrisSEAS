@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | TrisSEAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">Student Dashboard</div>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/ops/">Ops panel</a>
+            <a href="/analytics/">Analytics</a>
+            <a href="/notifications/">Notifications</a>
+            <a href="/student/">Students</a>
+            <a href="/parent/">Parents</a>
+        </nav>
+    </header>
+
+    <main class="layout">
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Student experience</p>
+                <h1>See today's attendance and stay informed.</h1>
+                <p class="lede">A concise snapshot of check-ins, alerts, and profile details so students always know their status.</p>
+                <div class="chip-row">
+                    <span>Attendance summary</span>
+                    <span>Notifications</span>
+                    <span>Profile basics</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="card">
+                    <p class="eyebrow">Today's attendance</p>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <p class="stat-value">08:05</p>
+                            <p class="stat-label">First entry</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value">On time</p>
+                            <p class="stat-label">Status</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value">0</p>
+                            <p class="stat-label">Alerts</p>
+                        </div>
+                        <div class="stat">
+                            <p class="stat-value">Updated</p>
+                            <p class="stat-label">Just now</p>
+                        </div>
+                    </div>
+                    <p class="muted">Live sync from campus gates</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Attendance</p>
+                        <h2>Week at a glance</h2>
+                    </div>
+                    <span class="chip">Autofilled</span>
+                </div>
+                <div class="feed-table">
+                    <div class="feed-row">
+                        <span class="badge ok">Mon</span>
+                        <span>On time</span>
+                        <span>08:05</span>
+                        <span>Present</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Tue</span>
+                        <span>On time</span>
+                        <span>08:03</span>
+                        <span>Present</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge warn">Wed</span>
+                        <span>Late</span>
+                        <span>08:22</span>
+                        <span>Present</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Thu</span>
+                        <span>On time</span>
+                        <span>08:04</span>
+                        <span>Present</span>
+                    </div>
+                    <div class="feed-row">
+                        <span class="badge ok">Fri</span>
+                        <span>On time</span>
+                        <span>08:01</span>
+                        <span>Present</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Notifications</p>
+                        <h2>Recent alerts</h2>
+                    </div>
+                    <a class="btn ghost" href="/notifications/">Manage</a>
+                </div>
+                <div class="mini-feed">
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Bus departure</p>
+                            <p class="muted">Route A departs at 3:45 PM</p>
+                        </div>
+                        <span>Now</span>
+                    </div>
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Gate update</p>
+                            <p class="muted">South gate undergoing maintenance</p>
+                        </div>
+                        <span>1h ago</span>
+                    </div>
+                    <div class="mini-feed-row">
+                        <div>
+                            <p class="feed-label">Attendance</p>
+                            <p class="muted">Wednesday marked late at 08:22</p>
+                        </div>
+                        <span>2d ago</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">Profile</p>
+                        <h2>Student details</h2>
+                    </div>
+                    <a class="btn" href="/admin/students/student/">Update</a>
+                </div>
+                <div class="actions">
+                    <div class="action">
+                        <div>👤</div>
+                        <div>
+                            <p>Avery Rivera</p>
+                            <small>Student ID · RFID linked</small>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div>🎓</div>
+                        <div>
+                            <p>Grade 10 · Section Blue</p>
+                            <small>Homeroom: Ms. Patel</small>
+                        </div>
+                    </div>
+                    <div class="action">
+                        <div>📱</div>
+                        <div>
+                            <p>Contact</p>
+                            <small>avery.rivera@school.local</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
