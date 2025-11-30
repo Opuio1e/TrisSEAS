@@ -1,7 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import redirect
 from django.urls import path, include
-from django.views.generic import TemplateView
 
 from apps.admin_panel.views import (
     AdminDashboardView,
@@ -12,9 +12,10 @@ from apps.admin_panel.views import (
     StudentDashboardView,
     live_stats,
 )
+from apps.users.views import RoleBasedLoginView
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path("", RoleBasedLoginView.as_view(), name="login"),
 
     # Friendly redirect for older bookmarks/shared links
     path(
@@ -29,6 +30,7 @@ urlpatterns = [
     path("notifications/", NotificationsView.as_view(), name="notifications"),
     path("student/", StudentDashboardView.as_view(), name="student-dashboard"),
     path("parent/", ParentDashboardView.as_view(), name="parent-dashboard"),
+    path("logout/", LogoutView.as_view(), name="logout"),
     path("api/live-stats/", live_stats, name="live-stats"),
     path("api/students/", include("apps.students.urls")),
     path("api/entry-gate/", include("apps.entry_gate.urls")),

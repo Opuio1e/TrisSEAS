@@ -3,6 +3,7 @@ from datetime import timedelta
 from django.db.models import Count
 from django.http import JsonResponse
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 from apps.attendance.models import AttendanceRecord
@@ -10,27 +11,27 @@ from apps.entry_gate.models import GateEvent
 from apps.students.models import Student
 
 
-class GateConsoleView(TemplateView):
+class GateConsoleView(LoginRequiredMixin, TemplateView):
     template_name = "gate_console.html"
 
 
-class AdminDashboardView(TemplateView):
+class AdminDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "admin_dashboard.html"
 
 
-class AnalyticsView(TemplateView):
+class AnalyticsView(LoginRequiredMixin, TemplateView):
     template_name = "analytics.html"
 
 
-class NotificationsView(TemplateView):
+class NotificationsView(LoginRequiredMixin, TemplateView):
     template_name = "notifications.html"
 
 
-class StudentDashboardView(TemplateView):
+class StudentDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "student_dashboard.html"
 
 
-class ParentDashboardView(TemplateView):
+class ParentDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "parent_dashboard.html"
 
 
