@@ -10,28 +10,42 @@ from apps.admin_panel.views import (
     NotificationsView,
     ParentDashboardView,
     StudentDashboardView,
+)
+from apps.admin_panel.admin_monitoring import (
+    admin_monitoring_dashboard,
+    clear_flag,
     live_stats,
+    manual_override,
 )
 from apps.users.views import RoleBasedLoginView
 
 urlpatterns = [
+    # Authentication
     path("", RoleBasedLoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
 
-    # Friendly redirect for older bookmarks/shared links
+    # Admin
+    path("admin/", admin.site.urls),
     path(
         "admin/advancedattendance/advancedrecord/",
         lambda request: redirect("admin:attendance_attendancerecord_changelist"),
     ),
 
-    path("admin/", admin.site.urls),
+    # Dashboards
     path("console/", GateConsoleView.as_view(), name="gate-console"),
     path("ops/", AdminDashboardView.as_view(), name="admin-dashboard"),
     path("analytics/", AnalyticsView.as_view(), name="analytics"),
     path("notifications/", NotificationsView.as_view(), name="notifications"),
     path("student/", StudentDashboardView.as_view(), name="student-dashboard"),
     path("parent/", ParentDashboardView.as_view(), name="parent-dashboard"),
-    path("logout/", LogoutView.as_view(), name="logout"),
+
+    # API Endpoints
     path("api/live-stats/", live_stats, name="live-stats"),
+    path("api/admin/monitoring/", admin_monitoring_dashboard, name="admin-monitoring"),
+    path("api/admin/manual-override/", manual_override, name="manual-override"),
+    path("api/admin/clear-flag/", clear_flag, name="clear-flag"),
+
+    # App APIs
     path("api/students/", include("apps.students.urls")),
     path("api/entry-gate/", include("apps.entry_gate.urls")),
     path("api/attendance/", include("apps.attendance.urls")),
