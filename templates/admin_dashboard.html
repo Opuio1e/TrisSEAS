@@ -1,4 +1,4 @@
-{% load static %}
+{% load static vite %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+    <link rel="stylesheet" href="{% vite_asset 'css/admin_dashboard.css' %}">
 </head>
 <body>
     <header class="topbar">
@@ -114,7 +114,7 @@
         </section>
     </main>
 
-    <script src="{% static 'js/live-stats.js' %}"></script>
+    <script type="module" src="{% vite_asset 'js/live-stats.js' %}"></script>
     <script>
         const opsEvents = document.getElementById('opsEvents');
         const opsPresent = document.getElementById('opsPresent');
