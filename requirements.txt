@@ -9,4 +9,3 @@ Pillow
 cryptography
 celery[redis]
 requests
-face-recognition

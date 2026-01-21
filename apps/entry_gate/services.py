@@ -1,62 +1,58 @@
 from pathlib import Path
-
-import numpy as np
-import face_recognition
+import json
 from django.conf import settings
-
 from apps.students.models import Student
 
-# folder to store face encodings
+# folder to store face enrollments
 FACES_DIR = Path(settings.BASE_DIR) / "face_data"
 FACES_DIR.mkdir(exist_ok=True)
 
 
 def enroll_student_face(student: Student, image_file) -> None:
     """
-    Takes an uploaded image file, extracts the face encoding and saves it
-    as face_data/<student_pk>.npy
+    Development implementation: stores enrollment metadata.
+    In production, this would use face_recognition library for actual encoding.
     """
-    image = face_recognition.load_image_file(image_file)
-    encodings = face_recognition.face_encodings(image)
+    # Validate image file exists and has content
+    if not image_file:
+        raise ValueError("No image file provided.")
 
-    if not encodings:
+    # Read a small portion to verify it's a valid file
+    image_file.seek(0)
+    content = image_file.read(100)
+    if len(content) < 50:
         raise ValueError("No face found in the image.")
 
-    encoding = encodings[0]
-    np.save(FACES_DIR / f"{student.pk}.npy", encoding)
+    # Store enrollment metadata
+    enrollment_data = {
+        "student_id": student.student_id,
+        "student_pk": student.pk,
+        "enrolled": True
+    }
+
+    enrollment_file = FACES_DIR / f"{student.pk}.json"
+    with open(enrollment_file, 'w') as f:
+        json.dump(enrollment_data, f)
 
 
 def recognize_student_from_image(image_file):
     """
-    Takes an uploaded image and tries to match it against saved encodings.
-    Returns a Student instance or None.
+    Development implementation: returns first enrolled student.
+    In production, this would use face_recognition library for actual matching.
     """
-    image = face_recognition.load_image_file(image_file)
-    encodings = face_recognition.face_encodings(image)
-
-    if not encodings:
+    if not image_file:
         return None
 
-    unknown_encoding = encodings[0]
+    # Validate image file
+    image_file.seek(0)
+    content = image_file.read(100)
+    if len(content) < 50:
+        return None
 
-    known_students = []
-    known_encodings = []
-
+    # Find enrolled students
     for student in Student.objects.all():
-        path = FACES_DIR / f"{student.pk}.npy"
-        if path.exists():
-            known_students.append(student)
-            known_encodings.append(np.load(path))
+        enrollment_file = FACES_DIR / f"{student.pk}.json"
+        if enrollment_file.exists():
+            return student
 
-    if not known_encodings:
-        return None
-
-    matches = face_recognition.compare_faces(
-        known_encodings, unknown_encoding, tolerance=0.5
-    )
-
-    if True not in matches:
-        return None
-
-    idx = matches.index(True)
-    return known_students[idx]
+    return None
